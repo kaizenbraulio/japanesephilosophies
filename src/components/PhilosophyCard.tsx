@@ -1,0 +1,39 @@
+import React from "react";
+import { Card, CardContent, CardHeader } from "@/components/ui/card";
+import { motion } from "framer-motion";
+
+interface PhilosophyCardProps {
+  title: string;
+  description: string;
+  image: string;
+  category: string;
+}
+
+const PhilosophyCard = ({ title, description, image, category }: PhilosophyCardProps) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0, y: 20 }}
+      animate={{ opacity: 1, y: 0 }}
+      transition={{ duration: 0.5 }}
+    >
+      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+        <div className="h-48 overflow-hidden">
+          <img
+            src={image}
+            alt={title}
+            className="w-full h-full object-cover transform hover:scale-105 transition-transform duration-300"
+          />
+        </div>
+        <CardHeader className="p-4">
+          <div className="text-sm text-secondary-DEFAULT mb-2">{category}</div>
+          <h3 className="text-xl font-semibold text-primary">{title}</h3>
+        </CardHeader>
+        <CardContent className="p-4 pt-0">
+          <p className="text-gray-600">{description}</p>
+        </CardContent>
+      </Card>
+    </motion.div>
+  );
+};
+
+export default PhilosophyCard;
