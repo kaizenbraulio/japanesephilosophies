@@ -21,6 +21,12 @@ const philosophies = [
     image: "https://images.unsplash.com/photo-1506744038136-46273834b3fb",
     category: "Buddhism",
   },
+  {
+    title: "Kaizen (改善)",
+    description: "The philosophy of continuous improvement in small, incremental steps, leading to significant long-term changes.",
+    image: "https://images.unsplash.com/photo-1581091226825-a6a2a5aee158",
+    category: "Business Philosophy",
+  },
 ];
 
 const Index = () => {
