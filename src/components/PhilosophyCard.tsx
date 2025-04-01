@@ -1,3 +1,4 @@
+
 import React from "react";
 import { Card, CardContent, CardHeader } from "@/components/ui/card";
 import { motion } from "framer-motion";
@@ -16,7 +17,7 @@ const PhilosophyCard = ({ title, description, image, category }: PhilosophyCardP
       animate={{ opacity: 1, y: 0 }}
       transition={{ duration: 0.5 }}
     >
-      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300">
+      <Card className="overflow-hidden hover:shadow-lg transition-shadow duration-300 dark-card">
         <div className="h-48 overflow-hidden">
           <img
             src={image}
@@ -29,7 +30,7 @@ const PhilosophyCard = ({ title, description, image, category }: PhilosophyCardP
           <h3 className="text-xl font-semibold text-primary">{title}</h3>
         </CardHeader>
         <CardContent className="p-4 pt-0">
-          <p className="text-gray-600">{description}</p>
+          <p className="text-gray-400">{description}</p>
         </CardContent>
       </Card>
     </motion.div>
