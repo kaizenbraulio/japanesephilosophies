@@ -3,6 +3,8 @@ import React, { useState } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Philosophy } from "@/data/philosophies";
+import { Input } from "@/components/ui/input";
+import { Textarea } from "@/components/ui/textarea";
 
 interface PhilosophyFormProps {
   onSubmit: (philosophy: Omit<Philosophy, "id">) => void;
@@ -23,8 +25,9 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
     setFormData((prev) => ({ ...prev, [name]: value }));
   };
 
+  // Update the handleArrayChange function to accept both InputElement and TextareaElement events
   const handleArrayChange = (
-    e: React.ChangeEvent<HTMLTextAreaElement>,
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
     field: "fullDescription" | "principles",
     index: number
   ) => {
@@ -74,7 +77,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
             <label htmlFor="title" className="text-sm font-medium text-gray-300">
               Title
             </label>
-            <input
+            <Input
               id="title"
               name="title"
               required
@@ -89,7 +92,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
             <label htmlFor="category" className="text-sm font-medium text-gray-300">
               Category
             </label>
-            <input
+            <Input
               id="category"
               name="category"
               required
@@ -104,7 +107,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
             <label htmlFor="description" className="text-sm font-medium text-gray-300">
               Short Description
             </label>
-            <textarea
+            <Textarea
               id="description"
               name="description"
               required
@@ -122,7 +125,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
             </label>
             {formData.fullDescription.map((paragraph, index) => (
               <div key={index} className="flex gap-2">
-                <textarea
+                <Textarea
                   value={paragraph}
                   onChange={(e) => handleArrayChange(e, "fullDescription", index)}
                   rows={3}
@@ -154,7 +157,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
             <label htmlFor="image" className="text-sm font-medium text-gray-300">
               Image URL
             </label>
-            <input
+            <Input
               id="image"
               name="image"
               required
@@ -174,7 +177,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
             </label>
             {formData.principles.map((principle, index) => (
               <div key={index} className="flex gap-2">
-                <input
+                <Input
                   value={principle}
                   onChange={(e) => handleArrayChange(e, "principles", index)}
                   className="w-full p-2 rounded-md border border-gray-600 bg-background text-foreground"
