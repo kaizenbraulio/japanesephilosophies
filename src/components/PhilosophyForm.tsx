@@ -1,5 +1,5 @@
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Philosophy } from "@/data/philosophies";
@@ -10,9 +10,15 @@ import { toast } from "@/hooks/use-toast";
 
 interface PhilosophyFormProps {
   onSubmit: (philosophy: Omit<Philosophy, "id">) => void;
+  initialValues?: Philosophy;
+  isEditing?: boolean;
 }
 
-const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
+const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ 
+  onSubmit, 
+  initialValues, 
+  isEditing = false 
+}) => {
   const [formData, setFormData] = useState<Omit<Philosophy, "id">>({
     title: "",
     description: "",
@@ -23,6 +29,25 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
   });
   
   const [useImageUrl, setUseImageUrl] = useState(false);
+
+  // Initialize form with initialValues if they exist
+  useEffect(() => {
+    if (initialValues) {
+      setFormData({
+        title: initialValues.title,
+        description: initialValues.description,
+        fullDescription: initialValues.fullDescription,
+        image: initialValues.image,
+        category: initialValues.category,
+        principles: initialValues.principles,
+      });
+      
+      // If there's an image URL, set the useImageUrl state accordingly
+      if (initialValues.image && !initialValues.image.startsWith('data:')) {
+        setUseImageUrl(true);
+      }
+    }
+  }, [initialValues]);
 
   const handleChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement>) => {
     const { name, value } = e.target;
@@ -82,22 +107,31 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
     
     onSubmit(formData);
     
-    // Reset form
-    setFormData({
-      title: "",
-      description: "",
-      fullDescription: [""],
-      image: "",
-      category: "",
-      principles: [""],
-    });
-    setUseImageUrl(false);
+    // Only reset form if not editing
+    if (!isEditing) {
+      setFormData({
+        title: "",
+        description: "",
+        fullDescription: [""],
+        image: "",
+        category: "",
+        principles: [""],
+      });
+      setUseImageUrl(false);
+    } else {
+      toast({
+        title: "Philosophy updated",
+        description: `${formData.title} has been updated successfully.`,
+      });
+    }
   };
 
   return (
     <Card className="dark-card">
       <CardHeader>
-        <CardTitle className="text-primary">Add New Philosophy</CardTitle>
+        <CardTitle className="text-primary">
+          {isEditing ? "Update Philosophy" : "Add New Philosophy"}
+        </CardTitle>
       </CardHeader>
       <CardContent>
         <form onSubmit={handleSubmit} className="space-y-6">
@@ -203,7 +237,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
                 )}
               </div>
             ) : (
-              <ImageUploader onImageSelect={handleImageSelect} />
+              <ImageUploader onImageSelect={handleImageSelect} currentImage={formData.image} />
             )}
           </div>
 
@@ -275,7 +309,7 @@ const PhilosophyForm: React.FC<PhilosophyFormProps> = ({ onSubmit }) => {
           </div>
 
           <Button type="submit" className="w-full">
-            Add Philosophy
+            {isEditing ? "Update Philosophy" : "Add Philosophy"}
           </Button>
         </form>
       </CardContent>
