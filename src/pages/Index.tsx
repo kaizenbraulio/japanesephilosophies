@@ -21,6 +21,10 @@ const Index = () => {
           </Link>
         </div>
         
+        <h2 className="text-2xl font-semibold mb-6 text-primary border-b border-gray-700 pb-2">
+          Browse Japanese Philosophies
+        </h2>
+        
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
           {philosophies.map((philosophy, index) => (
             <PhilosophyCard
@@ -34,6 +38,13 @@ const Index = () => {
           ))}
         </div>
       </main>
+      
+      <footer className="bg-accent/30 py-6 mt-12">
+        <div className="container mx-auto px-4 text-center text-gray-400 text-sm">
+          <p>© {new Date().getFullYear()} Japanese Philosophy Collection</p>
+          <p className="mt-2">A curated collection of timeless Japanese philosophical concepts</p>
+        </div>
+      </footer>
     </div>
   );
 };
