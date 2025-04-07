@@ -4,14 +4,15 @@ import { useParams, useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { ArrowLeft, Edit } from "lucide-react";
-import { philosophies } from "@/data/philosophies";
+import { philosophies, updatePhilosophy } from "@/data/philosophies";
 import { motion } from "framer-motion";
 import PhilosophyForm from "@/components/PhilosophyForm";
+import { toast } from "@/hooks/use-toast";
 
 const PhilosophyDetail = () => {
   const { id } = useParams();
   const navigate = useNavigate();
-  const philosophy = philosophies.find((p) => p.id === id);
+  const [philosophy, setPhilosophy] = useState(philosophies.find((p) => p.id === id));
   const [isEditing, setIsEditing] = useState(false);
   const [isAuthenticated, setIsAuthenticated] = useState(false);
 
@@ -26,19 +27,24 @@ const PhilosophyDetail = () => {
   if (!philosophy) return null;
 
   // Handle philosophy update
-  const handleUpdatePhilosophy = (updatedPhilosophy) => {
-    // Find the index of the philosophy in the array
-    const index = philosophies.findIndex(p => p.id === philosophy.id);
+  const handleUpdatePhilosophy = (updatedPhilosophyData) => {
+    const updatedPhilosophy = {
+      ...updatedPhilosophyData,
+      id: philosophy.id // Preserve the original ID
+    };
     
-    if (index !== -1) {
-      // Update the philosophy in the array
-      philosophies[index] = {
-        ...updatedPhilosophy,
-        id: philosophy.id // Preserve the original ID
-      };
-      
-      setIsEditing(false);
-    }
+    // Update the philosophy in the global array and save to localStorage
+    updatePhilosophy(updatedPhilosophy);
+    
+    // Update local state
+    setPhilosophy(updatedPhilosophy);
+    setIsEditing(false);
+    
+    // Show success message
+    toast({
+      title: "Philosophy updated",
+      description: `${updatedPhilosophy.title} has been updated successfully.`
+    });
   };
 
   // Handle admin authentication

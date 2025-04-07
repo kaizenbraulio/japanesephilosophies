@@ -1,3 +1,4 @@
+
 export interface Philosophy {
   id: string;
   title: string;
@@ -8,7 +9,8 @@ export interface Philosophy {
   principles?: string[];
 }
 
-export const philosophies: Philosophy[] = [
+// Default philosophies data
+const defaultPhilosophies: Philosophy[] = [
   {
     id: "wabi-sabi",
     title: "Wabi-Sabi (侘寂)",
@@ -172,3 +174,39 @@ export const philosophies: Philosophy[] = [
     ]
   }
 ];
+
+// Load philosophies from localStorage or use defaults
+const loadPhilosophies = (): Philosophy[] => {
+  const savedPhilosophies = localStorage.getItem('philosophies');
+  return savedPhilosophies ? JSON.parse(savedPhilosophies) : defaultPhilosophies;
+};
+
+// Save philosophies to localStorage
+export const savePhilosophies = (philosophies: Philosophy[]): void => {
+  localStorage.setItem('philosophies', JSON.stringify(philosophies));
+};
+
+// Initialize philosophies with data from localStorage or defaults
+export let philosophies: Philosophy[] = loadPhilosophies();
+
+// Function to reset philosophies to default values
+export const resetPhilosophies = (): void => {
+  philosophies = [...defaultPhilosophies];
+  savePhilosophies(philosophies);
+};
+
+// Function to update a specific philosophy
+export const updatePhilosophy = (updatedPhilosophy: Philosophy): void => {
+  const index = philosophies.findIndex(p => p.id === updatedPhilosophy.id);
+  
+  if (index !== -1) {
+    philosophies[index] = updatedPhilosophy;
+    savePhilosophies(philosophies);
+  }
+};
+
+// Function to add a new philosophy
+export const addPhilosophy = (newPhilosophy: Philosophy): void => {
+  philosophies.push(newPhilosophy);
+  savePhilosophies(philosophies);
+};

@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
-import { philosophies, Philosophy } from "@/data/philosophies";
+import { Philosophy, addPhilosophy } from "@/data/philosophies";
 import PhilosophyForm from "@/components/PhilosophyForm";
 
 const Admin = () => {
@@ -39,20 +39,22 @@ const Admin = () => {
       .replace(/\s+/g, "-")
       .replace(/[^\w-]+/g, "");
     
-    // In a real app, this would be an API call to update a database
-    // For demo purposes, we're just adding to the in-memory array
-    philosophies.push({
+    // Create the complete philosophy object with ID
+    const philosophyWithId = {
       ...newPhilosophy,
       id,
-    });
+    };
+    
+    // Add the philosophy to the array and save to localStorage
+    addPhilosophy(philosophyWithId);
     
     toast({
       title: "Philosophy added",
       description: `${newPhilosophy.title} has been added successfully.`,
     });
     
-    // In a real app, this would persist the data
-    console.log("Added new philosophy:", newPhilosophy);
+    // Log for debugging
+    console.log("Added new philosophy:", philosophyWithId);
   };
 
   return (
