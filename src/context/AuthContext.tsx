@@ -3,13 +3,9 @@ import React, { createContext, useState, useEffect, useContext, ReactNode } from
 import { Session, User } from '@supabase/supabase-js';
 import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
+import { Database } from '@/integrations/supabase/types';
 
-type Profile = {
-  id: string;
-  email: string;
-  role: 'user' | 'admin';
-  created_at: string;
-};
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 type AuthContextType = {
   session: Session | null;
@@ -88,7 +84,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       }
 
       if (data) {
-        setProfile(data as Profile);
+        setProfile(data);
         setIsAdmin(data.role === 'admin');
       }
     } catch (error) {

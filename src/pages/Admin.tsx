@@ -4,12 +4,16 @@ import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
+import { Input } from "@/components/ui/input";
 import { ArrowLeft } from "lucide-react";
 import { toast } from "@/hooks/use-toast";
 import { Philosophy, addPhilosophy } from "@/data/philosophies";
 import PhilosophyForm from "@/components/PhilosophyForm";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
+import { Database } from "@/integrations/supabase/types";
+
+type Profile = Database['public']['Tables']['profiles']['Row'];
 
 const Admin = () => {
   const navigate = useNavigate();
@@ -78,20 +82,22 @@ const Admin = () => {
         throw new Error(`User not found: ${userError.message}`);
       }
       
-      // Update the user role to admin
-      const { error: updateError } = await supabase
-        .from('profiles')
-        .update({ role: 'admin' })
-        .eq('id', userData.id);
+      if (userData) {
+        // Update the user role to admin
+        const { error: updateError } = await supabase
+          .from('profiles')
+          .update({ role: 'admin' })
+          .eq('id', userData.id);
+          
+        if (updateError) {
+          throw new Error(`Failed to update role: ${updateError.message}`);
+        }
         
-      if (updateError) {
-        throw new Error(`Failed to update role: ${updateError.message}`);
+        toast({
+          title: "User promoted",
+          description: `${email} has been promoted to admin.`,
+        });
       }
-      
-      toast({
-        title: "User promoted",
-        description: `${email} has been promoted to admin.`,
-      });
     } catch (error: any) {
       console.error('Error promoting user:', error);
       toast({
