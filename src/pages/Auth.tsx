@@ -6,7 +6,7 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { Loader2, AlertCircle } from "lucide-react";
+import { Loader2, AlertCircle, Mail } from "lucide-react";
 import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Auth = () => {
@@ -18,6 +18,7 @@ const Auth = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
+  const [confirmationSent, setConfirmationSent] = useState(false);
 
   useEffect(() => {
     // Redirect if user is already authenticated
@@ -31,11 +32,19 @@ const Auth = () => {
     setIsSubmitting(true);
     setError("");
     setSuccessMessage("");
+    setConfirmationSent(false);
 
     try {
       if (isSignUp) {
-        await signUp(email, password);
-        setSuccessMessage("Account created! Please check your email for verification instructions.");
+        const result = await signUp(email, password);
+        // Check if confirmation email was sent (based on confirmation_sent_at field)
+        if (result?.user?.confirmation_sent_at) {
+          setConfirmationSent(true);
+          setSuccessMessage("Account created! Please check your email for verification instructions.");
+        } else {
+          // If no confirmation email was sent, the user might be automatically confirmed
+          setSuccessMessage("Account created! You can now sign in.");
+        }
         // Don't navigate away immediately for signup, as we want to show the success message
       } else {
         await signIn(email, password);
@@ -78,6 +87,18 @@ const Auth = () => {
             {successMessage && (
               <Alert className="mb-4 bg-green-500/20 text-green-500 border-green-500/50">
                 <AlertDescription>{successMessage}</AlertDescription>
+              </Alert>
+            )}
+
+            {confirmationSent && (
+              <Alert className="mb-4 bg-blue-500/20 text-blue-500 border-blue-500/50">
+                <Mail className="h-4 w-4 mr-2" />
+                <AlertDescription>
+                  Confirmation email sent to {email}. Please check your inbox and spam folder.
+                  <p className="text-xs mt-1">
+                    Note: For testing, you may want to disable email confirmation in the Supabase dashboard.
+                  </p>
+                </AlertDescription>
               </Alert>
             )}
 
@@ -139,6 +160,7 @@ const Auth = () => {
                 setIsSignUp(!isSignUp);
                 setError("");
                 setSuccessMessage("");
+                setConfirmationSent(false);
               }}
               disabled={isSubmitting}
             >

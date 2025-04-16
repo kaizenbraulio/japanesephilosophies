@@ -15,7 +15,7 @@ type AuthContextType = {
   loading: boolean;
   isAdmin: boolean;
   signIn: (email: string, password: string) => Promise<void>;
-  signUp: (email: string, password: string) => Promise<void>;
+  signUp: (email: string, password: string) => Promise<{ user: User | null; session: Session | null } | undefined>;
   signOut: () => Promise<void>;
 };
 
@@ -142,6 +142,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
           title: "Signed up successfully",
           description: "Welcome! Please check your email for verification instructions.",
         });
+        return data; // Return the data so we can check confirmation status
       } else {
         throw new Error("Sign up failed - no user returned");
       }
