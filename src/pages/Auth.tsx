@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -6,8 +5,8 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { Loader2, AlertCircle, Mail } from "lucide-react";
-import { Alert, AlertDescription } from "@/components/ui/alert";
+import { Loader2, AlertCircle, Mail, Info } from "lucide-react";
+import { Alert, AlertDescription, AlertTitle } from "@/components/ui/alert";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -19,9 +18,9 @@ const Auth = () => {
   const [error, setError] = useState("");
   const [successMessage, setSuccessMessage] = useState("");
   const [confirmationSent, setConfirmationSent] = useState(false);
+  const [showEmailTroubleshooting, setShowEmailTroubleshooting] = useState(false);
 
   useEffect(() => {
-    // Redirect if user is already authenticated
     if (user) {
       navigate("/");
     }
@@ -37,18 +36,14 @@ const Auth = () => {
     try {
       if (isSignUp) {
         const result = await signUp(email, password);
-        // Check if confirmation email was sent (based on confirmation_sent_at field)
         if (result?.user?.confirmation_sent_at) {
           setConfirmationSent(true);
           setSuccessMessage("Account created! Please check your email for verification instructions.");
         } else {
-          // If no confirmation email was sent, the user might be automatically confirmed
           setSuccessMessage("Account created! You can now sign in.");
         }
-        // Don't navigate away immediately for signup, as we want to show the success message
       } else {
         await signIn(email, password);
-        // Navigate happens automatically via the useEffect when user is set
       }
     } catch (err: any) {
       console.error('Auth error:', err);
@@ -90,14 +85,43 @@ const Auth = () => {
               </Alert>
             )}
 
+            {showEmailTroubleshooting && (
+              <Alert variant="default" className="mb-4 bg-blue-500/10">
+                <Info className="h-4 w-4" />
+                <AlertTitle>Email Verification Troubleshooting</AlertTitle>
+                <AlertDescription>
+                  <ul className="list-disc pl-4 space-y-2 text-sm">
+                    <li>Check your spam/junk folder</li>
+                    <li>Verify your email provider isn't blocking emails</li>
+                    <li>Consider using a different email address</li>
+                    <li>For development, disable email confirmation in Supabase</li>
+                  </ul>
+                  <Button 
+                    variant="link" 
+                    className="mt-2 pl-0"
+                    onClick={() => window.open('https://supabase.com/dashboard/project/likqtzcrdffksdwykxdz/auth/providers', '_blank')}
+                  >
+                    Open Supabase Email Settings
+                  </Button>
+                </AlertDescription>
+              </Alert>
+            )}
+
             {confirmationSent && (
-              <Alert className="mb-4 bg-blue-500/20 text-blue-500 border-blue-500/50">
+              <Alert 
+                className="mb-4 bg-blue-500/20 text-blue-500 border-blue-500/50 flex items-center"
+              >
                 <Mail className="h-4 w-4 mr-2" />
                 <AlertDescription>
-                  Confirmation email sent to {email}. Please check your inbox and spam folder.
-                  <p className="text-xs mt-1">
-                    Note: For testing, you may want to disable email confirmation in the Supabase dashboard.
-                  </p>
+                  Confirmation email sent to {email}. 
+                  <Button 
+                    variant="link" 
+                    size="sm" 
+                    className="text-blue-600 pl-1"
+                    onClick={() => setShowEmailTroubleshooting(true)}
+                  >
+                    Need help?
+                  </Button>
                 </AlertDescription>
               </Alert>
             )}
