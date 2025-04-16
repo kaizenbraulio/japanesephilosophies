@@ -3,10 +3,11 @@ import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
 import { Button } from "@/components/ui/button";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle, CardFooter } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
-import { Loader2 } from "lucide-react";
+import { Loader2, AlertCircle } from "lucide-react";
+import { Alert, AlertDescription } from "@/components/ui/alert";
 
 const Auth = () => {
   const navigate = useNavigate();
@@ -16,6 +17,7 @@ const Auth = () => {
   const [password, setPassword] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState("");
+  const [successMessage, setSuccessMessage] = useState("");
 
   useEffect(() => {
     // Redirect if user is already authenticated
@@ -28,14 +30,17 @@ const Auth = () => {
     e.preventDefault();
     setIsSubmitting(true);
     setError("");
+    setSuccessMessage("");
 
     try {
       if (isSignUp) {
         await signUp(email, password);
+        setSuccessMessage("Account created! Please check your email for verification instructions.");
+        // Don't navigate away immediately for signup, as we want to show the success message
       } else {
         await signIn(email, password);
+        // Navigate happens automatically via the useEffect when user is set
       }
-      // Navigate to home on success (AuthContext will handle toast notifications)
     } catch (err: any) {
       console.error('Auth error:', err);
       setError(err.message || "An error occurred during authentication");
@@ -63,6 +68,19 @@ const Auth = () => {
             </CardTitle>
           </CardHeader>
           <CardContent>
+            {error && (
+              <Alert variant="destructive" className="mb-4">
+                <AlertCircle className="h-4 w-4" />
+                <AlertDescription>{error}</AlertDescription>
+              </Alert>
+            )}
+            
+            {successMessage && (
+              <Alert className="mb-4 bg-green-500/20 text-green-500 border-green-500/50">
+                <AlertDescription>{successMessage}</AlertDescription>
+              </Alert>
+            )}
+
             <form onSubmit={handleSubmit} className="space-y-4">
               <div className="space-y-2">
                 <label htmlFor="email" className="text-sm font-medium text-gray-300">
@@ -92,13 +110,12 @@ const Auth = () => {
                   required
                   disabled={isSubmitting}
                 />
+                {isSignUp && (
+                  <p className="text-xs text-gray-400 mt-1">
+                    Password must be at least 6 characters
+                  </p>
+                )}
               </div>
-
-              {error && (
-                <div className="p-3 rounded bg-destructive/20 text-destructive text-sm">
-                  {error}
-                </div>
-              )}
 
               <Button 
                 type="submit" 
@@ -112,21 +129,24 @@ const Auth = () => {
                   </>
                 ) : isSignUp ? "Create Account" : "Sign In"}
               </Button>
-
-              <div className="text-center mt-4">
-                <Button
-                  type="button"
-                  variant="link"
-                  onClick={() => setIsSignUp(!isSignUp)}
-                  disabled={isSubmitting}
-                >
-                  {isSignUp
-                    ? "Already have an account? Sign in"
-                    : "Don't have an account? Sign up"}
-                </Button>
-              </div>
             </form>
           </CardContent>
+          <CardFooter className="flex justify-center border-t pt-4">
+            <Button
+              type="button"
+              variant="link"
+              onClick={() => {
+                setIsSignUp(!isSignUp);
+                setError("");
+                setSuccessMessage("");
+              }}
+              disabled={isSubmitting}
+            >
+              {isSignUp
+                ? "Already have an account? Sign in"
+                : "Don't have an account? Sign up"}
+            </Button>
+          </CardFooter>
         </Card>
       </main>
     </div>

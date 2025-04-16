@@ -5,6 +5,7 @@ import { supabase } from '@/integrations/supabase/client';
 import { toast } from '@/hooks/use-toast';
 import { Database } from '@/integrations/supabase/types';
 
+// Define a type for the profile using the Database type
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 type AuthContextType = {
@@ -139,7 +140,7 @@ export const AuthProvider = ({ children }: { children: ReactNode }) => {
       if (data.user) {
         toast({
           title: "Signed up successfully",
-          description: "Please check your email for verification instructions.",
+          description: "Welcome! Please check your email for verification instructions.",
         });
       } else {
         throw new Error("Sign up failed - no user returned");

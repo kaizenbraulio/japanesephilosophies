@@ -13,6 +13,7 @@ import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
 
+// Define Profile type using the Database type
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 const Admin = () => {
