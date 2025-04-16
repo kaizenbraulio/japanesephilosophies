@@ -6,10 +6,11 @@ import { Button } from "@/components/ui/button";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { useAuth } from "@/context/AuthContext";
+import { Loader2 } from "lucide-react";
 
 const Auth = () => {
   const navigate = useNavigate();
-  const { signIn, signUp, user } = useAuth();
+  const { signIn, signUp, user, loading: authLoading } = useAuth();
   const [isSignUp, setIsSignUp] = useState(false);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -35,13 +36,21 @@ const Auth = () => {
         await signIn(email, password);
       }
       // Navigate to home on success (AuthContext will handle toast notifications)
-      navigate("/");
     } catch (err: any) {
+      console.error('Auth error:', err);
       setError(err.message || "An error occurred during authentication");
     } finally {
       setIsSubmitting(false);
     }
   };
+
+  if (authLoading) {
+    return (
+      <div className="min-h-screen bg-background flex items-center justify-center">
+        <Loader2 className="h-8 w-8 animate-spin text-primary" />
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-background">
@@ -96,11 +105,12 @@ const Auth = () => {
                 className="w-full" 
                 disabled={isSubmitting}
               >
-                {isSubmitting
-                  ? "Processing..."
-                  : isSignUp
-                  ? "Create Account"
-                  : "Sign In"}
+                {isSubmitting ? (
+                  <>
+                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                    Processing...
+                  </>
+                ) : isSignUp ? "Create Account" : "Sign In"}
               </Button>
 
               <div className="text-center mt-4">
