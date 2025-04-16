@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import Header from "@/components/Header";
@@ -12,8 +11,8 @@ import PhilosophyForm from "@/components/PhilosophyForm";
 import { useAuth } from "@/context/AuthContext";
 import { supabase } from "@/integrations/supabase/client";
 import { Database } from "@/integrations/supabase/types";
+import ChangePasswordForm from "@/components/ChangePasswordForm";
 
-// Define Profile type using the Database type
 type Profile = Database['public']['Tables']['profiles']['Row'];
 
 const Admin = () => {
@@ -22,17 +21,14 @@ const Admin = () => {
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    // Check if user is authenticated
     if (!user) {
       navigate("/auth");
       return;
     }
 
-    // Wait for profile to load
     if (profile !== null) {
       setLoading(false);
       
-      // If user is not admin, redirect with message
       if (!isAdmin) {
         toast({
           title: "Access denied",
@@ -45,19 +41,16 @@ const Admin = () => {
   }, [user, profile, isAdmin, navigate]);
 
   const handleAddPhilosophy = (newPhilosophy: Omit<Philosophy, "id">) => {
-    // Generate a slug-like ID from the title
     const id = newPhilosophy.title
       .toLowerCase()
       .replace(/\s+/g, "-")
       .replace(/[^\w-]+/g, "");
     
-    // Create the complete philosophy object with ID
     const philosophyWithId = {
       ...newPhilosophy,
       id,
     };
     
-    // Add the philosophy to the array and save to localStorage
     addPhilosophy(philosophyWithId);
     
     toast({
@@ -65,14 +58,11 @@ const Admin = () => {
       description: `${newPhilosophy.title} has been added successfully.`,
     });
     
-    // Log for debugging
     console.log("Added new philosophy:", philosophyWithId);
   };
 
-  // Function to promote a user to admin by their email
   const handlePromoteToAdmin = async (email: string) => {
     try {
-      // First, we need to find the user by email
       const { data: userData, error: userError } = await supabase
         .from('profiles')
         .select('id, email, role')
@@ -84,7 +74,6 @@ const Admin = () => {
       }
       
       if (userData) {
-        // Update the user role to admin
         const { error: updateError } = await supabase
           .from('profiles')
           .update({ role: 'admin' })
@@ -136,13 +125,11 @@ const Admin = () => {
         <h1 className="text-3xl font-bold mb-6 text-primary">Admin Dashboard</h1>
         
         <div className="grid grid-cols-1 gap-8 lg:grid-cols-2">
-          {/* Philosophy Form Section */}
           <div>
             <h2 className="text-xl font-semibold mb-4 text-primary">Add New Philosophy</h2>
             <PhilosophyForm onSubmit={handleAddPhilosophy} />
           </div>
           
-          {/* Admin Controls Section */}
           <div>
             <h2 className="text-xl font-semibold mb-4 text-primary">Admin Controls</h2>
             <Card className="dark-card mb-6">
@@ -154,7 +141,7 @@ const Admin = () => {
               </CardContent>
             </Card>
             
-            {/* Additional admin controls can be added here */}
+            <ChangePasswordForm />
           </div>
         </div>
       </main>
@@ -162,7 +149,6 @@ const Admin = () => {
   );
 };
 
-// Component for promoting users to admin
 const AdminPromoteForm = ({ onPromote }: { onPromote: (email: string) => Promise<void> }) => {
   const [email, setEmail] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -174,7 +160,7 @@ const AdminPromoteForm = ({ onPromote }: { onPromote: (email: string) => Promise
     setIsSubmitting(true);
     try {
       await onPromote(email);
-      setEmail(""); // Clear form on success
+      setEmail("");
     } finally {
       setIsSubmitting(false);
     }
